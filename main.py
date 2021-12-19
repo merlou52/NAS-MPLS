@@ -22,6 +22,7 @@ for router in config["routers"]:
         terminal.config_interface(interface["name"], interface["IP"], interface["netmask"])
 
     terminal.config_OSPF(config, router)
+    terminal.config_MPLS(config, router)
 
 
 print("end")

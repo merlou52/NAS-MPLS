@@ -51,3 +51,17 @@ class Commands:
                     self.command(f'end')
 
             self.write()
+
+    def config_MPLS(self, config, router):
+        self.command('configure terminal')
+        self.command('mpls ip')
+        self.command('mpls label protocol ldp')
+
+        for interface in router["interfaces"]:
+            if (interface["is_core"]):
+                self.command(f'interface {interface["name"]}')
+                self.command('mpls ip')
+                self.command('exit')
+        
+        self.command('end')
+        self.write()
