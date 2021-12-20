@@ -65,3 +65,27 @@ class Commands:
         
         self.command('end')
         self.write()
+    
+    def config_BGP(self, config, router, num_router, nb_routers):
+        self.command('configure terminal')
+        self.command('router bgp 111')
+        self.command('no sync')
+        self.command(f'bgp router-id 1.1.1.{num_router}')
+
+        for i in (range(nb_routers) ):
+            num = i + 1
+            if i + 1 != num_router:
+                self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 111')
+                self.command(f'neighbor {num}.{num}.{num}.{num} update-source Loopback0')
+                self.command(f'neighbor {num}.{num}.{num}.{num} activate')
+                self.command('network 1.1.1.0')
+        
+        self.command('address-family ipv4')
+
+        for interface in router["interfaces"]:
+            if (interface["is_core"] == False):
+                self.command(f'neighbor 1.{num_router}.0.2 remote-as 21{num_router}')
+                self.command(f'neighbor 1.{num_router}.0.2 activate')
+
+        self.command('end')
+        self.write()

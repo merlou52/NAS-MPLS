@@ -1,0 +1,3 @@
+- ajouter les clients en neighbor bgp 
+- faire les groupes pour les routes
+- implémenter bgp python 
