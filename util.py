@@ -25,6 +25,14 @@ class Commands:
         self.command('end')
         self.write()
 
+    def config_loopback(self, num_router):
+        self.command('configure terminal')
+        self.command('interface Loopback0')
+        self.command(f'ip address {num_router}.{num_router}.{num_router}.{num_router} 255.255.255.255')
+        self.command('no shutdown')
+        self.command('end')
+        self.write()
+
     def config_OSPF(self, config, router):
         self.command(f'configure terminal')
         self.command(f'router ospf {config["process_ID"]}')

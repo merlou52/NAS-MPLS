@@ -25,6 +25,7 @@ if sys.argv[1] == '0':
         print("connected to "+router["name"])
         r.read_until(b"#")
         r.write(b"\r")
+        terminal.config_loopback(num_router)
         for interface in router["interfaces"]:
             terminal.config_interface(interface["name"], interface["IP"], interface["netmask"])
 
