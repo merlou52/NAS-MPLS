@@ -150,7 +150,7 @@
     no shutdown 
     end
 
-#### R4 - R3
+#### R4 - R7
     configure terminal
     interface GigabitEthernet3/0
     ip address 1.0.12.1 255.255.255.0
