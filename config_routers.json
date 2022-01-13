@@ -7,6 +7,8 @@
 	"name":"R1",
 	"port":"5000",
 	"OSPF_ID":"1.1.1.1",
+	"is_border":true,
+	"nb":2,
 	"interfaces":[
 		{
 		"name": "FastEthernet0/0",
@@ -28,6 +30,8 @@
 	"name":"R2",
 	"port":"5001",
 	"OSPF_ID":"2.2.2.2",
+	"is_border":false,
+	"nb":3,
 	"interfaces":[
 		{
 		"name": "FastEthernet0/0",
@@ -41,6 +45,8 @@
 	"name":"R3",
 	"port":"5002",
 	"OSPF_ID":"3.3.3.3",
+	"is_border":false,
+	"nb":4,
 	"interfaces":[
 		{
 		"name": "GigabitEthernet1/0",

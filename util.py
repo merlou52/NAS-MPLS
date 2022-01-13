@@ -76,24 +76,59 @@ class Commands:
 
     def config_BGP(self, config, router, num_router, nb_routers):
         self.command('configure terminal')
-        self.command('router bgp 111')
-        self.command('no sync')
-        self.command(f'bgp router-id 1.1.1.{num_router}')
 
-        for i in (range(nb_routers)):
-            num = i + 1
-            if i + 1 != num_router:
-                self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 111')
-                self.command(f'neighbor {num}.{num}.{num}.{num} update-source Loopback0')
-                self.command(f'neighbor {num}.{num}.{num}.{num} activate')
-                self.command('network 1.1.1.0')
+        if(router["is_border"]):
+            self.command('router bgp 110')
+            #self.command('no sync')
+            self.command(f'bgp router-id 1.1.{router["nb"]}.1')
+            self.command('bgp log-neighbor-changes')
+            self.command(f'neighbor 1.1.{router["nb"]}.2 remote-as 11{router["nb"]}')
+            for i in (range(nb_routers)):
+                num = i + 1
+                if i + 1 != num_router:
+                    self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 110')
+                    self.command(f'neighbor {num}.{num}.{num}.{num} update-source Loopback0')
+            self.command('address-family ipv4')
+            self.command(f'network 10.10.0.0 mask 255.255.0.0')
+            self.command(f'network 1.1.{router["nb"]}.0 mask 255.255.255.252')
+            self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} mask 255.255.255.255'})
+            self.command(f'neighbor 1.1.{router["nb"]}.2 activate')
 
-        self.command('address-family ipv4')
+            for r in config["routers"]:
+                if(r["is_border"]):
+                    self.command(f'neighbor 1.1.{r["nb"]}.1 activate')
 
-        for interface in router["interfaces"]:
-            if not interface["is_core"]:
-                self.command(f'neighbor 1.{num_router}.0.2 remote-as 21{num_router}')
-                self.command(f'neighbor 1.{num_router}.0.2 activate')
+            for i in (range(nb_routers)):
+                num = i + 1
+                if i + 1 != num_router:
+                    self.command(f'neighbor {num}.{num}.{num}.{num} activate')
+            self.command('exit-address-family')
+
+        else:
+            self.command('router bgp 110')
+            #self.command('no sync')
+            self.command(f'bgp router-id {num_router}.{num_router}.{num_router}.{num_router}')
+            self.command('bgp log-neighbor-changes')
+            for i in (range(nb_routers)):
+                num = i + 1
+                if i + 1 != num_router:
+                    self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 110')
+                    self.command(f'neighbor {num}.{num}.{num}.{num} update-source Loopback0')
+            self.command('address-family ipv4')
+            self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} mask 255.255.255.255'})
+
+            for i in (range(nb_routers)):
+                num = i + 1
+                if i + 1 != num_router:
+                    self.command(f'neighbor {num}.{num}.{num}.{num} activate')
+            self.command('exit-address-family')
+
+
+        self.command('ip forward-protocol nd')
+#        for interface in router["interfaces"]:
+#            if not interface["is_core"]:
+#                self.command(f'neighbor 1.{num_router}.0.2 remote-as 21{num_router}')
+#                self.command(f'neighbor 1.{num_router}.0.2 activate')
 
         self.command('end')
         self.write()
