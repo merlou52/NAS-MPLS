@@ -33,7 +33,7 @@ class Commands:
         self.command('end')
         self.write()
 
-    def config_OSPF(self, config, router):
+    def config_OSPF(self, config, router, num_router):
         self.command(f'configure terminal')
         self.command(f'router ospf {config["process_ID"]}')
         self.command(f'router-id {router["OSPF_ID"]}')
@@ -42,22 +42,38 @@ class Commands:
         for interface in router["interfaces"]:
             if (interface["is_loopback"] == True):
                 self.command(f'configure terminal')
-                self.command(f'router ospf {config["process_ID"]}')
-                self.command(f'network {interface["addr_loopback"]} area 0')
+                #self.command(f'router ospf {config["process_ID"]}')
+                self.command(f'interface {interface["name"]}')
+                self.command(f'ip address {num_router}.{num_router}.{num_router}.{num_router} 255.255.255.255')
+                self.command(f'ip ospf {config["process_ID"]} area 1')
                 self.command(f'end')
 
             else:
                 if (interface["is_core"] == True):
                     self.command(f'configure terminal')
                     self.command(f'interface {interface["name"]}')
-                    self.command(f'ip ospf {config["process_ID"]} area 0')
+                    self.command(f'ip address 1.0.{interface["num"]}.2 255.255.255.0')
+                    #self.command(f'ip ospf {config["process_ID"]} area 1')
+                    #self.command('duplex full')
                     self.command(f'end')
                 else:
                     self.command(f'configure terminal')
-                    self.command(f'router ospf {config["process_ID"]}')
-                    self.command(f'passive-interface {interface["name"]}')
+                    self.command(f'interface {interface["name"]}')
+                    self.command(f'ip address 1.0.{interface["num"]}.2 255.255.255.252')
+                    self.command(f'ip ospf {config["process_ID"]} area 1')
+                    #self.command('duplex full')
+                    #self.command(f'passive-interface {interface["name"]}')
                     self.command(f'end')
 
+            self.command('conf t')
+            self.command(f'router ospf {config["process_ID"]}')
+            self.command(f'router-id {num_router}.{num_router}.{num_router}.{num_router}')
+            self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} 0.0.0.0 area 0')
+            if(router["is_border"]):
+                for interface in router["interfaces"]:
+                    if(interface["is_core"] == False):
+                        self.command(f'passive-interface {interface["name"]}')
+            self.command('end')
             self.write()
 
     def config_MPLS(self, config, router):
@@ -78,25 +94,25 @@ class Commands:
         self.command('configure terminal')
 
         if(router["is_border"]):
-            self.command('router bgp 110')
+            self.command('router bgp 111')
             #self.command('no sync')
-            self.command(f'bgp router-id 1.1.{router["nb"]}.1')
+            self.command(f'bgp router-id 1.1.1.{num_router}')
             self.command('bgp log-neighbor-changes')
-            self.command(f'neighbor 1.1.{router["nb"]}.2 remote-as 11{router["nb"]}')
+            for interface in router["interfaces"]:
+                if(interface["is_core"] == False):
+                    self.command(f'neighbor 1.{interface["num_client"]}.0.1 remote-as 11{interface["num_client"]}')
             for i in (range(nb_routers)):
                 num = i + 1
                 if i + 1 != num_router:
-                    self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 110')
+                    self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 111')
                     self.command(f'neighbor {num}.{num}.{num}.{num} update-source Loopback0')
             self.command('address-family ipv4')
-            self.command(f'network 10.10.0.0 mask 255.255.0.0')
-            self.command(f'network 1.1.{router["nb"]}.0 mask 255.255.255.252')
-            self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} mask 255.255.255.255'})
-            self.command(f'neighbor 1.1.{router["nb"]}.2 activate')
-
-            for r in config["routers"]:
-                if(r["is_border"]):
-                    self.command(f'neighbor 1.1.{r["nb"]}.1 activate')
+            self.command(f'network 1.0.{interface["num"]}.0 mask 255.255.255.0')
+            for interface in router["interfaces"]:
+                if(interface["is_core"] == False):
+                        self.command(f'network 1.{interface["num_client"]}.0.0 mask 255.255.255.252')
+                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 activate')
+            self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} mask 255.255.255.255')
 
             for i in (range(nb_routers)):
                 num = i + 1
@@ -105,17 +121,17 @@ class Commands:
             self.command('exit-address-family')
 
         else:
-            self.command('router bgp 110')
+            self.command('router bgp 111')
             #self.command('no sync')
             self.command(f'bgp router-id {num_router}.{num_router}.{num_router}.{num_router}')
             self.command('bgp log-neighbor-changes')
             for i in (range(nb_routers)):
                 num = i + 1
                 if i + 1 != num_router:
-                    self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 110')
+                    self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 111')
                     self.command(f'neighbor {num}.{num}.{num}.{num} update-source Loopback0')
             self.command('address-family ipv4')
-            self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} mask 255.255.255.255'})
+            self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} mask 255.255.255.255')
 
             for i in (range(nb_routers)):
                 num = i + 1
@@ -124,7 +140,6 @@ class Commands:
             self.command('exit-address-family')
 
 
-        self.command('ip forward-protocol nd')
 #        for interface in router["interfaces"]:
 #            if not interface["is_core"]:
 #                self.command(f'neighbor 1.{num_router}.0.2 remote-as 21{num_router}')

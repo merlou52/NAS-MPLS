@@ -29,7 +29,7 @@ if sys.argv[1] == '0':
         for interface in router["interfaces"]:
             terminal.config_interface(interface["name"], interface["IP"], interface["netmask"])
 
-        terminal.config_OSPF(config, router)
+        terminal.config_OSPF(config, router, num_router)
         terminal.config_MPLS(config, router)
 
         terminal.config_BGP(config, router, num_router, config["nb_routers"])
@@ -47,7 +47,7 @@ else :
 
     for i in range(len(sys.argv) - 2):
         com = com + sys.argv[i+2] + " "
-        
+
     terminal.command(com)
     print("On a pas encore implémenté")
 

@@ -1,58 +1,346 @@
 {
-"nb_routers":3,
+"nb_routers":6,
 "OSPF_area":0,
 "process_ID":1,
 "routers": [
 	{
-	"name":"R1",
-	"port":"5000",
-	"OSPF_ID":"1.1.1.1",
+        "name":"R1",
+        "port":"5000",
+        "OSPF_ID":"1.1.1.1",      
+        "is_border":false,
+        "interfaces":[
+        {
+            "name": "Loopback0",  
+            "num":0,
+            "IP": "1.1.1.1",
+            "netmask": "255.255.255.255",
+            "is_core":true,
+            "is_loopback":true
+        },
+        {
+            "name": "GigabitEthernet3/0",  
+            "num":9,
+            "IP": "1.0.9.1",
+            "netmask": "255.255.255.0",
+            "is_core":true,
+            "is_loopback":false
+        },
+        {
+            "name": "GigabitEthernet2/0",
+            "num":6,
+            "IP": "1.0.6.1",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        },
+        {
+            "name": "FastEthernet0/0",
+            "num":1,
+            "IP": "1.0.1.1",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        }]
+    },
+    {
+        "name":"R2",
+        "port":"5001",
+        "OSPF_ID":"2.2.2.2",      
+        "is_border":false,
+        "interfaces":[
+        {
+            "name": "Loopback0",  
+            "num":0,
+            "IP": "2.2.2.2",
+            "netmask": "255.255.255.255",
+            "is_core":true,
+            "is_loopback":true
+        },
+        {
+            "name": "GigabitEthernet2/0",  
+            "num":5,
+            "IP": "1.0.5.1",
+            "netmask": "255.255.255.0",
+            "is_core":true,
+            "is_loopback":false
+        },
+        {
+            "name": "GigabitEthernet1/0",
+            "num":2,
+            "IP": "1.0.2.2",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        },
+        {
+            "name": "GigabitEthernet3/0",
+            "num":1,
+            "IP": "1.0.1.1",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        },
+        {
+            "name": "FastEthernet0/0",
+            "num":3,
+            "IP": "1.0.3.1",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        }]
+    },
+        
+    {
+        "name":"R3",
+        "port":"5002",
+        "OSPF_ID":"3.3.3.3",      
+        "is_border":false,
+        "interfaces":[
+        {
+            "name": "Loopback0",  
+            "num":0,
+            "IP": "3.3.3.3",
+            "netmask": "255.255.255.255",
+            "is_core":true,
+            "is_loopback":true
+        },
+        {
+            "name": "GigabitEthernet2/0",  
+            "num":7,
+            "IP": "1.0.7.1",
+            "netmask": "255.255.255.0",
+            "is_core":true,
+            "is_loopback":false
+        },
+        {
+            "name": "GigabitEthernet1/0",
+            "num":4,
+            "IP": "1.0.4.1",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        },
+        {
+            "name": "GigabitEthernet3/0",
+            "num":11,
+            "IP": "1.0.11.1",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        },
+        {
+            "name": "FastEthernet0/0",
+            "num":3,
+            "IP": "1.0.3.2",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        }]
+    },
+    {
+        "name":"R4",
+        "port":"5003",
+        "OSPF_ID":"4.4.4.4",      
+        "is_border":false,
+        "interfaces":[
+        {
+            "name": "Loopback0",  
+            "num":0,
+            "IP": "4.4.4.4",
+            "netmask": "255.255.255.255",
+            "is_core":true,
+            "is_loopback":true
+        },
+        {
+            "name": "GigabitEthernet2/0",  
+            "num":8,
+            "IP": "1.0.8.1",
+            "netmask": "255.255.255.0",
+            "is_core":true,
+            "is_loopback":false
+        },
+        {
+            "name": "GigabitEthernet1/0",
+            "num":4,
+            "IP": "1.0.4.2",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        },
+        {
+            "name": "GigabitEthernet3/0",
+            "num":12,
+            "IP": "1.0.12.1",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        },
+        {
+            "name": "FastEthernet0/0",
+            "num":1,
+            "IP": "1.0.1.2",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        }]
+    },
+	{
+	"name":"R5",
+	"port":"5004",
+	"OSPF_ID":"5.5.5.5",      
 	"is_border":true,
-	"nb":2,
-	"interfaces":[
+  	"interfaces":[
+  	{
+		"name": "Loopback0",  
+		"num":1,
+		"IP": "5.5.5.5",
+		"netmask": "255.255.255.255",
+		"is_core":true,
+		"is_loopback":true
+		},
 		{
-		"name": "FastEthernet0/0",
-		"IP": "1.0.1.1",
+		"name": "FastEthernet0/0",  
+		"num":0,
+		"IP": "1.1.0.1",
+		"netmask": "255.255.255.252",
+		"is_core":false,
+		"num_client":1,
+		"is_loopback":false
+		},
+		{
+		"name": "GigabitEthernet3/0",  
+		"num":9,
+		"IP": "1.0.9.2",
 		"netmask": "255.255.255.0",
 		"is_core":true,
 		"is_loopback":false
 		},
 		{
-		"name": "GigabitEthernet1/0",
-		"IP": "1.0.2.1",
+		"name": "GigabitEthernet2/0",
+		"num":5,
+		"IP": "1.0.5.2",
 		"netmask": "255.255.255.0",
-		"is_core":true,
-		"is_loopback":false
-		}]
-	},
-
-	{
-	"name":"R2",
-	"port":"5001",
-	"OSPF_ID":"2.2.2.2",
-	"is_border":false,
-	"nb":3,
-	"interfaces":[
-		{
-		"name": "FastEthernet0/0",
-		"IP": "1.0.1.2",
-		"netmask": "255.255.255.0",
-		"is_core":true,
+		"is_core":true, 
 		"is_loopback":false
 		}]
 	},
 	{
-	"name":"R3",
-	"port":"5002",
-	"OSPF_ID":"3.3.3.3",
-	"is_border":false,
-	"nb":4,
-	"interfaces":[
+	"name":"R6",
+	"port":"5005",
+	"OSPF_ID":"6.6.6.6",      
+	"is_border":true,
+  	"interfaces":[
+  	{
+		"name": "Loopback0",  
+		"num":0,
+		"IP": "6.6.6.6",
+		"netmask": "255.255.255.255",
+		"is_core":true,
+		"is_loopback":true
+		},
 		{
-		"name": "GigabitEthernet1/0",
-		"IP": "1.0.2.2",
+		"name": "FastEthernet0/0",  
+		"num":0,
+		"IP": "1.2.0.1",
+		"netmask": "255.255.255.252",
+		"is_core":false,
+		"num_client":2,
+		"is_loopback":false
+		},
+		{
+		"name": "GigabitEthernet3/0",  
+		"num":10,
+		"IP": "1.0.10.2",
 		"netmask": "255.255.255.0",
 		"is_core":true,
+		"is_loopback":false
+		},
+		{
+		"name": "GigabitEthernet2/0",
+		"num":6,
+		"IP": "1.0.6.2",
+		"netmask": "255.255.255.0",
+		"is_core":true, 
+		"is_loopback":false
+		}]
+	},
+	{
+	"name":"R7",
+	"port":"5006",
+	"OSPF_ID":"7.7.7.7",      
+	"is_border":true,
+  	"interfaces":[
+  	{
+		"name": "Loopback0",  
+		"num":0,
+		"IP": "7.7.7.7",
+		"netmask": "255.255.255.255",
+		"is_core":true,
+		"is_loopback":true
+		},
+		{
+		"name": "FastEthernet0/0",  
+		"num":0,
+		"IP": "1.0.3.1",
+		"netmask": "255.255.255.252",
+		"is_core":false,
+		"num_client":3,
+		"is_loopback":false
+		},
+		{
+		"name": "GigabitEthernet3/0",  
+		"num":12,
+		"IP": "1.0.12.2",
+		"netmask": "255.255.255.0",
+		"is_core":true,
+		"is_loopback":false
+		},
+		{
+		"name": "GigabitEthernet2/0",
+		"num":7,
+		"IP": "1.0.7.2",
+		"netmask": "255.255.255.0",
+		"is_core":true, 
+		"is_loopback":false
+		}]
+	},
+	{
+	"name":"R8",
+	"port":"5007",
+	"OSPF_ID":"8.8.8.8",      
+	"is_border":true,
+  	"interfaces":[
+  	{
+		"name": "Loopback0",  
+		"num":0,
+		"IP": "8.8.8.8",
+		"netmask": "255.255.255.255",
+		"is_core":true,
+		"is_loopback":true
+		},
+		{
+		"name": "FastEthernet0/0",  
+		"num":0,
+		"IP": "1.4.0.1",
+		"netmask": "255.255.255.252",
+		"is_core":false,
+		"num_client":4,
+		"is_loopback":false
+		},
+		{
+		"name": "GigabitEthernet3/0",  
+		"num":11,
+		"IP": "1.0.11.2",
+		"netmask": "255.255.255.0",
+		"is_core":true,
+		"is_loopback":false
+		},
+		{
+		"name": "GigabitEthernet2/0",
+		"num":8,
+		"IP": "1.0.8.2",
+		"netmask": "255.255.255.0",
+		"is_core":true, 
 		"is_loopback":false
 		}]
 	}]
