@@ -33,9 +33,9 @@ class Commands:
         self.command('end')
         self.write()
 
-    def config_OSPF(self, config, router, num_router):
+    def config_OSPF(self, process_ID, router, num_router):
         self.command(f'configure terminal')
-        self.command(f'router ospf {config["process_ID"]}')
+        self.command(f'router ospf {process_ID}')
         self.command(f'router-id {router["OSPF_ID"]}')
         self.command(f'end')
 
@@ -45,27 +45,27 @@ class Commands:
                 ###self.command(f'router ospf {config["process_ID"]}')
                 self.command(f'interface {interface["name"]}')
                 #self.command(f'ip address {num_router}.{num_router}.{num_router}.{num_router} 255.255.255.255')
-                self.command(f'ip ospf {config["process_ID"]} area 1')
+                self.command(f'ip ospf {process_ID} area 1')
                 self.command(f'end')
 
             else:
                 if (interface["is_core"] == True):
                     self.command(f'configure terminal')
                     self.command(f'interface {interface["name"]}')
-                    self.command(f'ip ospf {config["process_ID"]} area 1')
+                    self.command(f'ip ospf {process_ID} area 1')
                     ###self.command('duplex full')
                     self.command(f'end')
                 else:
                     self.command(f'configure terminal')
                     self.command(f'interface {interface["name"]}')
                     #self.command(f'ip address 1.0.{interface["num"]}.2 255.255.255.252')
-                    self.command(f'ip ospf {config["process_ID"]} area 1')
+                    self.command(f'ip ospf {process_ID} area 1')
                     ###self.command('duplex full')
                     ###self.command(f'passive-interface {interface["name"]}')
                     self.command(f'end')
 
             self.command('conf t')
-            self.command(f'router ospf {config["process_ID"]}')
+            self.command(f'router ospf {process_ID}')
             self.command(f'router-id {num_router}.{num_router}.{num_router}.{num_router}')
             self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} 0.0.0.0 area 0')
             if(router["is_border"]):
@@ -75,7 +75,7 @@ class Commands:
             self.command('end')
             self.write()
 
-    def config_MPLS(self, config, router):
+    def config_MPLS(self, router):
         self.command('configure terminal')
         self.command('mpls ip')
         self.command('mpls label protocol ldp')
@@ -125,7 +125,14 @@ class Commands:
                     self.command('end')
                 self.write()
 
-    def config_BGP(self, config, router, num_router, nb_routers):
+    def update_BGP(self, num_new_router):
+        self.command('configure terminal')
+        self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} remote-as 111')
+        self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} update-source Loopback0')
+        if(router["is_border"] == False):
+            self.command(f'neighbor {num}.{num}.{num}.{num} activate')
+
+    def config_BGP(self, router, num_router, nb_routers):
         self.command('configure terminal')
 
         if(router["is_border"]):
