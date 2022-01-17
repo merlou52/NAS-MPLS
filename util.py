@@ -125,7 +125,7 @@ class Commands:
                     self.command('end')
                 self.write()
 
-    def update_BGP(self, num_new_router):
+    def update_BGP(self, router, num_new_router):
         self.command('configure terminal')
         self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} remote-as 111')
         self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} update-source Loopback0')
