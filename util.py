@@ -42,9 +42,9 @@ class Commands:
         for interface in router["interfaces"]:
             if (interface["is_loopback"] == True):
                 self.command(f'configure terminal')
-                #self.command(f'router ospf {config["process_ID"]}')
+                ###self.command(f'router ospf {config["process_ID"]}')
                 self.command(f'interface {interface["name"]}')
-                self.command(f'ip address {num_router}.{num_router}.{num_router}.{num_router} 255.255.255.255')
+                #self.command(f'ip address {num_router}.{num_router}.{num_router}.{num_router} 255.255.255.255')
                 self.command(f'ip ospf {config["process_ID"]} area 1')
                 self.command(f'end')
 
@@ -52,17 +52,16 @@ class Commands:
                 if (interface["is_core"] == True):
                     self.command(f'configure terminal')
                     self.command(f'interface {interface["name"]}')
-                    self.command(f'ip address 1.0.{interface["num"]}.2 255.255.255.0')
-                    #self.command(f'ip ospf {config["process_ID"]} area 1')
-                    #self.command('duplex full')
+                    self.command(f'ip ospf {config["process_ID"]} area 1')
+                    ###self.command('duplex full')
                     self.command(f'end')
                 else:
                     self.command(f'configure terminal')
                     self.command(f'interface {interface["name"]}')
-                    self.command(f'ip address 1.0.{interface["num"]}.2 255.255.255.252')
+                    #self.command(f'ip address 1.0.{interface["num"]}.2 255.255.255.252')
                     self.command(f'ip ospf {config["process_ID"]} area 1')
-                    #self.command('duplex full')
-                    #self.command(f'passive-interface {interface["name"]}')
+                    ###self.command('duplex full')
+                    ###self.command(f'passive-interface {interface["name"]}')
                     self.command(f'end')
 
             self.command('conf t')
@@ -89,6 +88,42 @@ class Commands:
 
         self.command('end')
         self.write()
+
+    def config_route_map(self, router):
+        for interface in router["interfaces"]:
+            if(interface["is_core"] == False):
+                if(interface["client_type"] == "provider"):
+                    self.command('conf t')
+                    self.command('route-map PROVIDER_OUT permit 10')
+                    self.command('match community 10')
+                    self.command('continue')
+                    self.command('end')
+                    self.command('conf t')
+                    self.command('route-map PROVIDER_IN permit 30')
+                    self.command('match community 1')
+                    self.command('set local-preference 50')
+                    self.command(f'set community {interface["client_as"]}:50')
+                    self.command('end')
+                if(interface["client_type"] == "peer"):
+                    self.command('conf t')
+                    self.command('route-map PEER_OUT permit 10')
+                    self.command('match community 10')
+                    self.command('continue')
+                    self.command('end')
+                    self.command('conf t')
+                    self.command('route-map PEER_IN permit 30')
+                    self.command('match community 1')
+                    self.command('set local-preference 100')
+                    self.command(f'set community {interface["client_as"]}:100')
+                    self.command('end')
+                if(interface["client_type"] == "client"):
+                    self.command('conf t')
+                    self.command('route-map CLIENT_IN permit 10')
+                    self.command('match community 1')
+                    self.command('set local-preference 150')
+                    self.command(f'set community {interface["client_as"]}:150')
+                    self.command('end')
+                self.write()
 
     def config_BGP(self, config, router, num_router, nb_routers):
         self.command('configure terminal')

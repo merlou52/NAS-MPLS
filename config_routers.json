@@ -1,5 +1,5 @@
 {
-"nb_routers":6,
+"nb_routers":8,
 "OSPF_area":0,
 "process_ID":1,
 "routers": [
@@ -75,7 +75,7 @@
         {
             "name": "GigabitEthernet3/0",
             "num":1,
-            "IP": "1.0.1.1",
+            "IP": "1.0.10.1",
             "netmask": "255.255.255.0",
             "is_core":true, 
             "is_loopback":false
@@ -205,6 +205,8 @@
 		"netmask": "255.255.255.252",
 		"is_core":false,
 		"num_client":1,
+		"client_type":"provider",
+		"client_as":211,
 		"is_loopback":false
 		},
 		{
@@ -245,6 +247,8 @@
 		"netmask": "255.255.255.252",
 		"is_core":false,
 		"num_client":2,
+		"client_type":"client",
+		"client_as":212,
 		"is_loopback":false
 		},
 		{
@@ -281,10 +285,12 @@
 		{
 		"name": "FastEthernet0/0",  
 		"num":0,
-		"IP": "1.0.3.1",
+		"IP": "1.3.0.1",
 		"netmask": "255.255.255.252",
 		"is_core":false,
 		"num_client":3,
+		"client_type":"peer",
+		"client_as":213,
 		"is_loopback":false
 		},
 		{
@@ -325,6 +331,8 @@
 		"netmask": "255.255.255.252",
 		"is_core":false,
 		"num_client":4,
+		"client_type":"client",
+		"client_as":214,
 		"is_loopback":false
 		},
 		{

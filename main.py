@@ -33,6 +33,7 @@ if sys.argv[1] == '0':
         terminal.config_MPLS(config, router)
 
         terminal.config_BGP(config, router, num_router, config["nb_routers"])
+        terminal.config_route_map(router)
         num_router += 1
 
 else :
