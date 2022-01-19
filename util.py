@@ -13,7 +13,7 @@ class Commands:
 
     def write(self):
         self.command('write')
-        for i in range(10): # pour etre sur que le routeur capte bien qu'on lui dise 'yes'
+        for i in range(7): # pour etre sur que le routeur capte bien qu'on lui dise 'yes'
             self.command('')
             time.sleep(0.1)
 
@@ -89,42 +89,6 @@ class Commands:
         self.command('end')
         self.write()
 
-    def config_route_map(self, router):
-        for interface in router["interfaces"]:
-            if(interface["is_core"] == False):
-                if(interface["client_type"] == "provider"):
-                    self.command('conf t')
-                    self.command('route-map PROVIDER_OUT permit 10')
-                    self.command('match community 10')
-                    self.command('continue')
-                    self.command('end')
-                    self.command('conf t')
-                    self.command('route-map PROVIDER_IN permit 30')
-                    self.command('match community 1')
-                    self.command('set local-preference 50')
-                    self.command(f'set community {interface["client_as"]}:50')
-                    self.command('end')
-                if(interface["client_type"] == "peer"):
-                    self.command('conf t')
-                    self.command('route-map PEER_OUT permit 10')
-                    self.command('match community 10')
-                    self.command('continue')
-                    self.command('end')
-                    self.command('conf t')
-                    self.command('route-map PEER_IN permit 30')
-                    self.command('match community 1')
-                    self.command('set local-preference 100')
-                    self.command(f'set community {interface["client_as"]}:100')
-                    self.command('end')
-                if(interface["client_type"] == "client"):
-                    self.command('conf t')
-                    self.command('route-map CLIENT_IN permit 10')
-                    self.command('match community 1')
-                    self.command('set local-preference 150')
-                    self.command(f'set community {interface["client_as"]}:150')
-                    self.command('end')
-                self.write()
-
     def update_BGP(self, router, num_new_router):
         self.command('configure terminal')
         self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} remote-as 111')
@@ -132,7 +96,7 @@ class Commands:
         if(router["is_border"] == False):
             self.command(f'neighbor {num}.{num}.{num}.{num} activate')
 
-    def config_BGP(self, router, num_router, nb_routers):
+    def config_BGP(self, router, num_router, nb_routers, clients_as):
         self.command('configure terminal')
 
         if(router["is_border"]):
@@ -142,18 +106,73 @@ class Commands:
             self.command('bgp log-neighbor-changes')
             for interface in router["interfaces"]:
                 if(interface["is_core"] == False):
-                    self.command(f'neighbor 1.{interface["num_client"]}.0.1 remote-as 11{interface["num_client"]}')
+                    self.command(f'neighbor 1.{interface["num_client"]}.0.2 remote-as 11{interface["num_client"]}')
+                    if(interface["client_type"] == "provider"):
+                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map PROVIDER_IN in')
+                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map PROVIDER_OUT out')
+                        self.command('end')
+                        self.command('conf t')
+                        self.command('route-map PROVIDER_OUT permit 10')
+                        self.command('match community 10')
+                        self.command('continue')
+                        self.command('end')
+                        self.command('conf t')
+                        self.command('route-map PROVIDER_IN permit 30')
+                        self.command('match community 1')
+                        self.command('set local-preference 50')
+                        self.command(f'set community {interface["client_as"]}:50')
+                        self.command('end')
+                        self.command('conf t')
+                        for client in clients_as:
+                            self.command(f'ip community-list 10 permit {client}:150')
+                        self.command('access-list 1 permit any')
+                    elif(interface["client_type"] == "peer"):
+                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map PEER_IN in')
+                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map PEER_OUT out')
+                        self.command('end')
+                        self.command('conf t')
+                        self.command('route-map PEER_OUT permit 10')
+                        self.command('match community 10')
+                        self.command('continue')
+                        self.command('end')
+                        self.command('conf t')
+                        self.command('route-map PEER_IN permit 30')
+                        self.command('match community 1')
+                        self.command('set local-preference 100')
+                        self.command(f'set community {interface["client_as"]}:100')
+                        self.command('end')
+                        self.command('conf t')
+                        for client in clients_as:
+                            self.command(f'ip community-list 10 permit {client}:150')
+                    elif(interface["client_type"] == "client"):
+                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map CLIENT in')
+                        self.command('end')
+                        self.command('conf t')
+                        self.command('route-map CLIENT_IN permit 10')
+                        self.command('match community 1')
+                        self.command('set local-preference 150')
+                        self.command(f'set community {interface["client_as"]}:150')
+
+            self.command('end')
+            self.command('conf t')
+            self.command('ip community-list 1 permit internet')
+            self.command('router bgp 111')
             for i in (range(nb_routers)):
                 num = i + 1
                 if i + 1 != num_router:
                     self.command(f'neighbor {num}.{num}.{num}.{num} remote-as 111')
                     self.command(f'neighbor {num}.{num}.{num}.{num} update-source Loopback0')
+                    self.command(f'neighbor {num}.{num}.{num}.{num} send-community')
             self.command('address-family ipv4')
-            self.command(f'network 1.0.{interface["num"]}.0 mask 255.255.255.0')
+
             for interface in router["interfaces"]:
                 if(interface["is_core"] == False):
-                        self.command(f'network 1.{interface["num_client"]}.0.0 mask 255.255.255.252')
-                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 activate')
+                    self.command(f'network 1.{interface["num_client"]}.0.0 mask 255.255.255.252')
+                    self.command(f'neighbor 1.{interface["num_client"]}.0.2 activate')
+                elif(interface["is_loopback"] == False): #is_core is True here
+                    self.command(f'network 1.0.{interface["num"]}.0 mask 255.255.255.0')
+
+
             self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} mask 255.255.255.255')
 
             for i in (range(nb_routers)):

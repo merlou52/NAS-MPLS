@@ -29,11 +29,11 @@ if sys.argv[1] == '0':
         for interface in router["interfaces"]:
             terminal.config_interface(interface["name"], interface["IP"], interface["netmask"])
 
-        terminal.config_OSPF(config["proccess_ID"], router, num_router)
+        terminal.config_OSPF(config["process_ID"], router, num_router)
         terminal.config_MPLS(router)
 
-        terminal.config_BGP(router, num_router, config["nb_routers"])
-        terminal.config_route_map(router)
+        terminal.config_BGP(router, num_router, config["nb_routers"], config["clients_as"])
+        #terminal.config_route_map(router)
         num_router += 1
 
 else :

@@ -2,6 +2,7 @@
 "nb_routers":8,
 "OSPF_area":0,
 "process_ID":1,
+"clients_as":[212,214],
 "routers": [
 	{
         "name":"R1",
