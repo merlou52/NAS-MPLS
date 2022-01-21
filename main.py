@@ -23,18 +23,21 @@ if sys.argv[1] == '0':
         r = telnetlib.Telnet("localhost", router["port"])
         terminal = util.Commands(r)
         print("connected to "+router["name"])
-        r.read_until(b"#")
-        r.write(b"\r")
+        #r.read_until(b"#")
+        for i in range(5):
+            r.write(b"\r")
+            sleep(1)
         terminal.config_loopback(num_router)
         for interface in router["interfaces"]:
             terminal.config_interface(interface["name"], interface["IP"], interface["netmask"])
 
         terminal.config_OSPF(config["process_ID"], router, num_router)
-        terminal.config_MPLS(router)
+        terminal.config_MPLS(router, config["process_ID"])
 
         terminal.config_BGP(router, num_router, config["nb_routers"], config["clients_as"])
         #terminal.config_route_map(router)
         num_router += 1
+        sleep(5)
 
 else :
 

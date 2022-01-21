@@ -9,13 +9,13 @@ class Commands:
     def command(self, string):
         self.tn.write(f'{string}\r'.encode("utf-8"))
         # print(self.tn.read_until(b"#"))
-        time.sleep(0.1) # pour permettre que le routeur soit pas submergé par les commandes
+        time.sleep(0.5) # pour permettre que le routeur soit pas submergé par les commandes
 
     def write(self):
         self.command('write')
         for i in range(7): # pour etre sur que le routeur capte bien qu'on lui dise 'yes'
             self.command('')
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def config_interface(self, name, ip, mask):
         self.command('configure terminal')
@@ -67,7 +67,7 @@ class Commands:
             self.command('conf t')
             self.command(f'router ospf {process_ID}')
             self.command(f'router-id {num_router}.{num_router}.{num_router}.{num_router}')
-            self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} 0.0.0.0 area 0')
+            #self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} 0.0.0.0 area 0')
             if(router["is_border"]):
                 for interface in router["interfaces"]:
                     if(interface["is_core"] == False):
@@ -75,8 +75,9 @@ class Commands:
             self.command('end')
             self.write()
 
-    def config_MPLS(self, router):
+    def config_MPLS(self, router, process_ID):
         self.command('configure terminal')
+        """
         self.command('mpls ip')
         self.command('mpls label protocol ldp')
 
@@ -85,7 +86,9 @@ class Commands:
                 self.command(f'interface {interface["name"]}')
                 self.command('mpls ip')
                 self.command('exit')
-
+        """
+        self.command(f'router ospf {process_ID}')
+        self.command(f'mpls ldp autoconfig')
         self.command('end')
         self.write()
 
@@ -106,7 +109,7 @@ class Commands:
             self.command('bgp log-neighbor-changes')
             for interface in router["interfaces"]:
                 if(interface["is_core"] == False):
-                    self.command(f'neighbor 1.{interface["num_client"]}.0.2 remote-as 11{interface["num_client"]}')
+                    self.command(f'neighbor 1.{interface["num_client"]}.0.2 remote-as {interface["client_as"]}')
                     if(interface["client_type"] == "provider"):
                         self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map PROVIDER_IN in')
                         self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map PROVIDER_OUT out')
@@ -145,7 +148,7 @@ class Commands:
                         for client in clients_as:
                             self.command(f'ip community-list 10 permit {client}:150')
                     elif(interface["client_type"] == "client"):
-                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map CLIENT in')
+                        self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map CLIENT_IN in')
                         self.command('end')
                         self.command('conf t')
                         self.command('route-map CLIENT_IN permit 10')

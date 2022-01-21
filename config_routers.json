@@ -6,7 +6,7 @@
 "routers": [
 	{
         "name":"R1",
-        "port":"5000",
+        "port":"5020",
         "OSPF_ID":"1.1.1.1",      
         "is_border":false,
         "interfaces":[
@@ -35,6 +35,14 @@
             "is_loopback":false
         },
         {
+            "name": "GigabitEthernet1/0",
+            "num":2,
+            "IP": "1.0.2.1",
+            "netmask": "255.255.255.0",
+            "is_core":true, 
+            "is_loopback":false
+        },
+        {
             "name": "FastEthernet0/0",
             "num":1,
             "IP": "1.0.1.1",
@@ -45,7 +53,7 @@
     },
     {
         "name":"R2",
-        "port":"5001",
+        "port":"5021",
         "OSPF_ID":"2.2.2.2",      
         "is_border":false,
         "interfaces":[
@@ -75,7 +83,7 @@
         },
         {
             "name": "GigabitEthernet3/0",
-            "num":1,
+            "num":10,
             "IP": "1.0.10.1",
             "netmask": "255.255.255.0",
             "is_core":true, 
@@ -93,7 +101,7 @@
         
     {
         "name":"R3",
-        "port":"5002",
+        "port":"5022",
         "OSPF_ID":"3.3.3.3",      
         "is_border":false,
         "interfaces":[
@@ -140,7 +148,7 @@
     },
     {
         "name":"R4",
-        "port":"5003",
+        "port":"5023",
         "OSPF_ID":"4.4.4.4",      
         "is_border":false,
         "interfaces":[
@@ -187,13 +195,13 @@
     },
 	{
 	"name":"R5",
-	"port":"5004",
+	"port":"5024",
 	"OSPF_ID":"5.5.5.5",      
 	"is_border":true,
   	"interfaces":[
   	{
 		"name": "Loopback0",  
-		"num":1,
+		"num":0,
 		"IP": "5.5.5.5",
 		"netmask": "255.255.255.255",
 		"is_core":true,
@@ -229,7 +237,7 @@
 	},
 	{
 	"name":"R6",
-	"port":"5005",
+	"port":"5025",
 	"OSPF_ID":"6.6.6.6",      
 	"is_border":true,
   	"interfaces":[
@@ -271,7 +279,7 @@
 	},
 	{
 	"name":"R7",
-	"port":"5006",
+	"port":"5026",
 	"OSPF_ID":"7.7.7.7",      
 	"is_border":true,
   	"interfaces":[
@@ -313,7 +321,7 @@
 	},
 	{
 	"name":"R8",
-	"port":"5007",
+	"port":"5027",
 	"OSPF_ID":"8.8.8.8",      
 	"is_border":true,
   	"interfaces":[
@@ -352,5 +360,6 @@
 		"is_core":true, 
 		"is_loopback":false
 		}]
-	}]
+	}
+]
 }
