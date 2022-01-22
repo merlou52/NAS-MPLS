@@ -24,6 +24,12 @@ Le JSON propose des ports fixes adaptés à la configuration visible dans le sch
 Vous trouverez un schéma du montage sur lequel nous avons fait nos tests. Il est indiqué les adresses utilisées, numéro d'AS, router-id... 
 Il y est aussi indiqué les types de lien vers l'extérieur (client, peer, provider).
 
+## Archives
+
+Il y a 2 archives dans notre dossier projet. Blank_project contient une architecture vierge sur laquelle on peut lancer le script. Les routeurs clients y sont déjà configurés mais pas les VPC client (qu'il faut configurer à la main). Le script s'occupera de configurer les routeurs de notre réseau. 
+
+Il y a aussi une autre archive avec une instance de GNS3 dont tous les routeurs ont été configurés, si vous voulez tester notre configuration sans avoir à lancer le script.
+
 ## Auteurs
 
 Romain Berthomieu, Pakinam Tarek, Gaspard Michel, Maxime Bouhadana et Antoine Merle
