@@ -14,9 +14,9 @@ f.close()
 
 f2 = open(sys.argv[1], "r")
 new_routers = json.load(f2)
-f2.close
+f2.close()
 
-for new_router in new_routers["router"]:
+for new_router in new_routers["routers"]:
     num_router = config["nb_routers"]+1
 
     r = telnetlib.Telnet("localhost", new_router["port"])
@@ -30,7 +30,6 @@ for new_router in new_routers["router"]:
 
     terminal.config_OSPF(config["proccess_ID"], new_router, num_router)
     terminal.config_MPLS(new_router)
-
     terminal.config_BGP(new_router, num_router, num_router)
     terminal.config_route_map(new_router)
 
@@ -43,13 +42,11 @@ for new_router in new_routers["router"]:
         r.write(b"\r")
         terminal2.update_BGP(router, num_router)
 
-
     # updates file
     config["nb_routers"]++
     config["routers"].append(new_router)
     f = open('config_routers.json', "w")
     json.dump(config, f)
     f.close()
-
 
 print("end")

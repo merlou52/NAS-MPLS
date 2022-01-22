@@ -5,23 +5,32 @@ Autoconfigurateur MPLS pour GNS3 via un script Python
 
 ## Lancement
 
-Pour lancer le script il faut utiliser la commande suivante : 
+Pour lancer le script "main" il faut utiliser la commande suivante : 
 
     python3 main.py 0
 
 Il faut aussi avoir allumé les routeurs sur GNS3.
 
-NB : - bien vérifier que les routeurs ont bien fini de s'allumer
-     - les scripts est lent (18 min), bien attendre sa fin
+NB : - il faut bien vérifier que les routeurs ont bien fini de s'allumer
+     - le script est lent (18 min), bien attendre sa fin
      - les protocoles sont lents à converger, dans nos simulations les routes BGP mettaient jusqu'à 10 min à se créer
+
+
+
+Pour lancer le script "update", qui permet de configurer de nouveaux routeurs tout en les ajoutant au JSON (/!\ ne fonctionne pas pour l'instant) :
+
+	python3 update.py {nouveau(x)_routeur(s).json}
+
+NB : - il y a un exemple de fichier JSON à remplir sous le nom "new_routers.json"
+	 - ce script ne fonctionne pas pour le moment : il faut prendre en compte le fait qu'il faut créer de nouvelles interfaces dans les routeurs auxquels les nouveaux sont connectés
 
 ## JSON proposé
 
-Le JSON propose des ports fixes adaptés à la configuration visible dans le schéma. Avant de lancer le script, il faut vérifier que les ports sur GNS3 des routeurs correspondent bien à ceux inscrits dans le JSON.
+Le JSON "config_routers" propose des ports fixes adaptés à la configuration visible dans le schéma. Avant de lancer le script, il faut vérifier que les ports sur GNS3 des routeurs correspondent bien à ceux inscrits dans le JSON.
 
 ## Schéma proposé
 
-Vous trouverez un schéma du montage sur lequel nous avons fait nos tests. Il est indiqué les adresses utilisées, numéro d'AS, router-id... 
+Vous trouverez un schéma du montage sur lequel nous avons fait nos tests. Il y est indiqué les adresses utilisées, numéro d'AS, router-id... 
 Il y est aussi indiqué les types de lien vers l'extérieur (client, peer, provider).
 
 ## Archives

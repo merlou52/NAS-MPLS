@@ -14,7 +14,7 @@ class Commands:
     # Fonction lançant la commande "write"
     def write(self):
         self.command('write')
-        for i in range(7): # Pour être sur que le routeur capte bien qu'on lui dise 'yes'
+        for i in range(7): # Pour être sûrs que le routeur ait reçu le write et ait fini de le traiter
             self.command('')
             time.sleep(0.5)
 
@@ -80,12 +80,17 @@ class Commands:
         self.command('end')
         self.write()
 
+    # Met à jour la configuration BGP des routeurs à l'ajout d'un autre /!\ ne fonctionne pas encore
     def update_BGP(self, router, num_new_router):
         self.command('configure terminal')
+        self.command('router bgp 111')
         self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} remote-as 111')
         self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} update-source Loopback0')
-        if(router["is_border"] == False):
-            self.command(f'neighbor {num}.{num}.{num}.{num} activate')
+        if(router["is_border"]):
+            self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} send-community')
+        self.command(f'neighbor {num_new_router}.{num_new_router}.{num_new_router}.{num_new_router} activate')
+        self.command('end')
+        self.write()
 
     # Configure BGP
     def config_BGP(self, router, num_router, nb_routers, clients_as):
@@ -96,7 +101,7 @@ class Commands:
             self.command(f'bgp router-id 1.1.1.{num_router}')
             self.command('bgp log-neighbor-changes')
             for interface in router["interfaces"]:
-                if(interface["is_core"] == False):
+                if(interface["is_core"] == False): # si c'est une interface vers un AS voisin, donc hors de notre réseau
                     self.command(f'neighbor 1.{interface["num_client"]}.0.2 remote-as {interface["client_as"]}')
                     # Configuration des route-map
                     if(interface["client_type"] == "provider"):
@@ -161,7 +166,7 @@ class Commands:
                 if(interface["is_core"] == False):
                     self.command(f'network 1.{interface["num_client"]}.0.0 mask 255.255.255.252')
                     self.command(f'neighbor 1.{interface["num_client"]}.0.2 activate')
-                elif(interface["is_loopback"] == False): 
+                elif(interface["is_loopback"] == False):
                     self.command(f'network 1.0.{interface["num"]}.0 mask 255.255.255.0')
 
 
