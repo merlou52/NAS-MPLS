@@ -1,4 +1,2 @@
 - relancer le script et vérifier que tout marche
 - tester en cassant la config
-- commenter le code 
-- mettre les fichiers client

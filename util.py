@@ -6,17 +6,19 @@ class Commands:
     def __init__(self, tn):
         self.tn = tn
 
+    # Fonction lançant une commande
     def command(self, string):
         self.tn.write(f'{string}\r'.encode("utf-8"))
-        # print(self.tn.read_until(b"#"))
-        time.sleep(0.5) # pour permettre que le routeur soit pas submergé par les commandes
+        time.sleep(0.5) # Pour permettre que le routeur soit pas submergé par les commandes
 
+    # Fonction lançant la commande "write"
     def write(self):
         self.command('write')
-        for i in range(7): # pour etre sur que le routeur capte bien qu'on lui dise 'yes'
+        for i in range(7): # Pour être sur que le routeur capte bien qu'on lui dise 'yes'
             self.command('')
             time.sleep(0.5)
 
+    # Configure une interface d'un routeur
     def config_interface(self, name, ip, mask):
         self.command('configure terminal')
         self.command(f'interface {name}')
@@ -25,6 +27,7 @@ class Commands:
         self.command('end')
         self.write()
 
+    # Configure une interface de Loopback
     def config_loopback(self, num_router):
         self.command('configure terminal')
         self.command('interface Loopback0')
@@ -33,6 +36,7 @@ class Commands:
         self.command('end')
         self.write()
 
+    # Configure OSPF
     def config_OSPF(self, process_ID, router, num_router):
         self.command(f'configure terminal')
         self.command(f'router ospf {process_ID}')
@@ -42,9 +46,7 @@ class Commands:
         for interface in router["interfaces"]:
             if (interface["is_loopback"] == True):
                 self.command(f'configure terminal')
-                ###self.command(f'router ospf {config["process_ID"]}')
                 self.command(f'interface {interface["name"]}')
-                #self.command(f'ip address {num_router}.{num_router}.{num_router}.{num_router} 255.255.255.255')
                 self.command(f'ip ospf {process_ID} area 1')
                 self.command(f'end')
 
@@ -53,21 +55,16 @@ class Commands:
                     self.command(f'configure terminal')
                     self.command(f'interface {interface["name"]}')
                     self.command(f'ip ospf {process_ID} area 1')
-                    ###self.command('duplex full')
                     self.command(f'end')
                 else:
                     self.command(f'configure terminal')
                     self.command(f'interface {interface["name"]}')
-                    #self.command(f'ip address 1.0.{interface["num"]}.2 255.255.255.252')
                     self.command(f'ip ospf {process_ID} area 1')
-                    ###self.command('duplex full')
-                    ###self.command(f'passive-interface {interface["name"]}')
                     self.command(f'end')
 
             self.command('conf t')
             self.command(f'router ospf {process_ID}')
             self.command(f'router-id {num_router}.{num_router}.{num_router}.{num_router}')
-            #self.command(f'network {num_router}.{num_router}.{num_router}.{num_router} 0.0.0.0 area 0')
             if(router["is_border"]):
                 for interface in router["interfaces"]:
                     if(interface["is_core"] == False):
@@ -75,18 +72,9 @@ class Commands:
             self.command('end')
             self.write()
 
+    # Configure MPLS
     def config_MPLS(self, router, process_ID):
         self.command('configure terminal')
-        """
-        self.command('mpls ip')
-        self.command('mpls label protocol ldp')
-
-        for interface in router["interfaces"]:
-            if (interface["is_core"]):
-                self.command(f'interface {interface["name"]}')
-                self.command('mpls ip')
-                self.command('exit')
-        """
         self.command(f'router ospf {process_ID}')
         self.command(f'mpls ldp autoconfig')
         self.command('end')
@@ -99,17 +87,18 @@ class Commands:
         if(router["is_border"] == False):
             self.command(f'neighbor {num}.{num}.{num}.{num} activate')
 
+    # Configure BGP
     def config_BGP(self, router, num_router, nb_routers, clients_as):
         self.command('configure terminal')
 
         if(router["is_border"]):
             self.command('router bgp 111')
-            #self.command('no sync')
             self.command(f'bgp router-id 1.1.1.{num_router}')
             self.command('bgp log-neighbor-changes')
             for interface in router["interfaces"]:
                 if(interface["is_core"] == False):
                     self.command(f'neighbor 1.{interface["num_client"]}.0.2 remote-as {interface["client_as"]}')
+                    # Configuration des route-map
                     if(interface["client_type"] == "provider"):
                         self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map PROVIDER_IN in')
                         self.command(f'neighbor 1.{interface["num_client"]}.0.2 route-map PROVIDER_OUT out')
@@ -172,7 +161,7 @@ class Commands:
                 if(interface["is_core"] == False):
                     self.command(f'network 1.{interface["num_client"]}.0.0 mask 255.255.255.252')
                     self.command(f'neighbor 1.{interface["num_client"]}.0.2 activate')
-                elif(interface["is_loopback"] == False): #is_core is True here
+                elif(interface["is_loopback"] == False): 
                     self.command(f'network 1.0.{interface["num"]}.0 mask 255.255.255.0')
 
 
@@ -186,7 +175,6 @@ class Commands:
 
         else:
             self.command('router bgp 111')
-            #self.command('no sync')
             self.command(f'bgp router-id {num_router}.{num_router}.{num_router}.{num_router}')
             self.command('bgp log-neighbor-changes')
             for i in (range(nb_routers)):
@@ -202,12 +190,6 @@ class Commands:
                 if i + 1 != num_router:
                     self.command(f'neighbor {num}.{num}.{num}.{num} activate')
             self.command('exit-address-family')
-
-
-#        for interface in router["interfaces"]:
-#            if not interface["is_core"]:
-#                self.command(f'neighbor 1.{num_router}.0.2 remote-as 21{num_router}')
-#                self.command(f'neighbor 1.{num_router}.0.2 activate')
 
         self.command('end')
         self.write()
